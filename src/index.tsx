@@ -10,18 +10,25 @@ export const app = new Frog({
 app.use('/*', serveStatic({ root: './public' }))
 
 app.frame('/', (c) => {
-  const { buttonValue, inputText, status } = c
-  const amount = inputText || buttonValue
+  const { inputText, status } = c
+  const amount = Number(inputText)
   const snxPrice = 21.92 * (1 + 0.01) // snxPrice * 1 + getPremimum()
-  const totalSnxBurned = 42069 // getBalance of 0xDEAD
-  
+  const totalSnxBurned = 42069 // snx.balanceOf(0xDEAD)
+
+  // TODO: Get actual values from contracts for price, premium & total sent to dead address
+  // TODO: Check snx.balanceOf(interactor) >= amount
+  // TODO: Check approval/allowance
+  // TODO: Invoke txn to TrustedMulticallForwarder -> snxPrice update + processBuyback
+  // TODO: Error handling and input validation
+  // TODO: Add images & animations
+
   return c.res({
     image: (
       <div
         style={{
           alignItems: 'center',
           background:
-            status === 'response' && Number(amount) > 0
+            status === 'response' && amount > 0
               ? 'linear-gradient(to right, #0984e3, #4834d4)'
               : 'black',
           backgroundSize: '100% 100%',
@@ -39,39 +46,40 @@ app.frame('/', (c) => {
             color: '#74b9ff',
             fontSize: 60,
             fontStyle: 'normal',
-            letterSpacing: '-0.025em',
-            lineHeight: 1.4,
-            marginTop: 30,
-            padding: '0 120px',
+            letterSpacing: '-0.01337em',
+            lineHeight: 1.25,
+            marginTop: 25,
+            padding: '0 100px',
             whiteSpace: 'pre-wrap',
           }}
         >
-          {status === 'response' && Number(amount) > 0
-            ? `You burned ${amount ? `${amount.toUpperCase()} SNX!` : ''}`
+          {status === 'response' && amount > 0
+            ? `You burned ${amount} SNX!`
             : '🔥 SNX Buyback & Burn 🔥'}
         </div>
         <div
           style={{
-            color: 'white',
+            color: '#efefef',
             fontSize: 42,
             fontStyle: 'normal',
-            letterSpacing: '-0.025em',
-            lineHeight: 1.4,
-            marginTop: 30,
-            padding: '0 120px',
+            letterSpacing: '-0.02em',
+            lineHeight: 1.25,
+            marginTop: 25,
+            padding: '0 100px',
             whiteSpace: 'pre-wrap',
           }}
         >
-          {status === 'response' && Number(amount) > 0
-            ? `You got $${(snxPrice * Number(amount)).toFixed(2)}!`
-            : `Buyback price: $${snxPrice.toFixed(2)}\nTotal SNX burned: ${totalSnxBurned}`}
+          {status === 'response' && amount > 0
+            ? `You got $${(snxPrice * amount).toFixed(2)}!`
+            : `Estimated Buyback price: $${snxPrice.toFixed(2)}\nTotal SNX burned: ${totalSnxBurned.toFixed(0)}`}
         </div>
       </div>
     ),
     intents: [
       <TextInput placeholder="Enter amount to burn..." />,
-      <Button value="burn">BURN SNX</Button>,
-      status === 'response' && Number(amount) > 0 && <Button.Reset>Reset</Button.Reset>,
+      <Button value="approve">Approve SNX</Button>,
+      <Button value="burn">Burn SNX</Button>,
+      status === 'response' && amount > 0 && <Button.Reset>Reset</Button.Reset>,
     ],
   })
 })
