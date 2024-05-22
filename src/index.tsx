@@ -18,7 +18,7 @@ app.frame('/', (c) => {
   // TODO: Get actual values from contracts for price, premium & total sent to dead address
   // TODO: Check snx.balanceOf(interactor) >= amount
   // TODO: Check approval/allowance
-  // TODO: Invoke txn to TrustedMulticallForwarder -> snxPrice update + processBuyback
+  // TODO: Invoke txn to TrustedMulticallForwarder -> approval + snxPrice update + processBuyback
   // TODO: Error handling and input validation
   // TODO: Add images & animations
 
@@ -77,8 +77,8 @@ app.frame('/', (c) => {
     ),
     intents: [
       <TextInput placeholder="Enter amount to burn..." />,
-      <Button value="approve">Approve SNX</Button>,
       <Button value="burn">Burn SNX</Button>,
+      <Button.Link href="https://synthetix.streamlit.app/">View Stats</Button.Link>,
       status === 'response' && amount > 0 && <Button.Reset>Reset</Button.Reset>,
     ],
   })
